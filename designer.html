@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+  <style>
+.box1{
+     width:380px;
+     position: fixed;
+     z-index:30;
+     border:1px solid #ccc;
+     left:0;
+     right:0;
+     margin:36% auto auto auto;
+     background-color:#fff;
+     padding:6px;
+    }
+.closeBtn{
+  float:right;
+  margin-right:3%;
+  cursor: pointer;
+}
+.title{
+  height: 20px;
+}
+p{
+padding:3px;
+border-top:1px solid #ccc;
+word-break:normal;
+white-space:pre-warp;
+word-wrap:break-word;
+}
+ #active_box{
+    border:1px solid black;
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    z-index:-10;
+  }
+  table{
+  border-style: ridge;
+  position: positive;
+  opacity:0.75;
+  display:inline;
+  border-collapse:collapse;
+  }
+  table:hover{
+    cursor:pointer;
+  }
+  td
+  {
+  border: 1px solid black;
+  }
+  #d{
+  float:right;
+  }
+  #p{
+  float:left;
+  }
+  #tablelist{
+  opacity:1;
+  width:88%;
+  margin-left:6%;
+  }
+  .white{
+  background-color:#ffffff;
+  }
+  .yellow{
+  background-color:#FFFF00;
+  border-radius:50%;
+  }
+  #ddiv{
+  opacity:1;
+  z-index:-5;
+  }
+  button:hover{
+    cursor:pointer;
+  }
+input:hover{
+    cursor:pointer;
+}
+.control{
+    text-align: center;
+    text-decoration: none;
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    border-radius: 2px;
+    margin:1%;
+}
+  </style>
+  <script>
+  var is_down=0;
+  var down_id="";
+  var up_id="";
+  var startX, startY;
+  var is_follow=0;
+  var isExist=null;
+// 鼠标移动
+function mousemove(e){
+    if(is_down){
+         // 更新 box 尺寸
+        if(document.getElementById("active_box") !== null) {
+            var ab = document.getElementById("active_box");
+            if(e.pageX>startX){
+                if(e.pageY>startY){
+                    ab.style.top = startY + 'px';
+                    ab.style.left = startX + 'px';
+                    ab.style.width = Math.abs(e.pageX - startX) + 'px';
+                    ab.style.height = Math.abs(e.pageY - startY) + 'px';
+                }else if(e.pageY==startY){
+                    ab.style.top = startY + 'px';
+                    ab.style.left = startX + 'px';
+                    ab.style.width = Math.abs(e.pageX - startX) + 'px';
+                    ab.style.height = Math.abs(e.pageY - startY) + 'px';
+                }else{
+                    ab.style.top = e.pageY + 'px';
+                    ab.style.left = startX + 'px';
+                    ab.style.width = Math.abs(e.pageX - startX) + 'px';
+                    ab.style.height = Math.abs(e.pageY - startY) + 'px';
+                }
+            }else if(e.pageX==startX){
+                if(e.pageY>startY){
+                    ab.style.top = startY + 'px';
+                    ab.style.left = startX + 'px';
+                    ab.style.width = Math.abs(e.pageX - startX) + 'px';
+                    ab.style.height = Math.abs(e.pageY - startY) + 'px';
+                }else if(e.pageY==startY){
+                    ab.style.top = startY + 'px';
+                    ab.style.left = startX + 'px';
+                    ab.style.width = Math.abs(e.pageX - startX) + 'px';
+                    ab.style.height = Math.abs(e.pageY - startY) + 'px';
+                }else{
+                    ab.style.top = e.pageY + 'px';
+                    ab.style.left = startX + 'px';
+                    ab.style.width = Math.abs(e.pageX - startX) + 'px';
+                    ab.style.height = Math.abs(e.pageY - startY) + 'px';
+                }
+            }else{
+                if(e.pageY>startY){
+                    ab.style.top = startY + 'px';
+                    ab.style.left = e.pageX + 'px';
+                    ab.style.width = Math.abs(e.pageX - startX) + 'px';
+                    ab.style.height = Math.abs(e.pageY - startY) + 'px';
+                }else if(e.pageY==startY){
+                    ab.style.top = e.pageY + 'px';
+                    ab.style.left = e.pageX + 'px';
+                    ab.style.width = Math.abs(e.pageX - startX) + 'px';
+                    ab.style.height = Math.abs(e.pageY - startY) + 'px';
+                }else{
+                    ab.style.top = e.pageY + 'px';
+                    ab.style.left = e.pageX + 'px';
+                    ab.style.width = Math.abs(e.pageX - startX) + 'px';
+                    ab.style.height = Math.abs(e.pageY - startY) + 'px';
+                }  
+            }      
+        }
+    }else{
+        if(document.getElementById("active_box") !== null){
+            var ab = document.getElementById("active_box");
+            document.body.removeChild(ab);      
+        }
+    }
+}
+function mouseDown(e,d)
+{
+    down_id=e.id;
+    startX = d.pageX;
+    startY = d.pageY;
+    // 在页面创建 box
+    var active_box = document.createElement("div");
+    active_box.id = "active_box";
+    active_box.className = "box";
+    document.body.appendChild(active_box);
+    active_box.style.top = startY + 'px';
+    active_box.style.left = startX + 'px';
+    active_box = null;
+    is_down=1;
+}
+function mouseUp(e,d)
+{
+    is_down=0;
+    if(document.getElementById("active_box") !== null){
+            var ab = document.getElementById("active_box");
+            document.body.removeChild(ab);      
+    }
+    up_id=e.id;
+    tname_up=up_id.split(",")[0];
+    tname_down=down_id.split(",")[0];
+    x_up=parseInt(up_id.split(",")[1]);
+    y_up=parseInt(up_id.split(",")[2]);
+    x_down=parseInt(down_id.split(",")[1]);
+    y_down=parseInt(down_id.split(",")[2]);
+    if(down_id==up_id){
+        if(tname_up==tname_down&&tname_up=="p"){
+            //console.log("p");
+            if(e.className=="white"){
+                a=document.getElementById("p,"+x_up+","+y_up);
+                a.className = "yellow";
+                if(is_follow){
+                    b=document.getElementById("d,"+x_down+","+y_down);
+                    b.className = "yellow";
+                }  
+            }else{
+                a=document.getElementById("p,"+x_up+","+y_up);
+                a.className = "white";
+                if(is_follow){
+                    b=document.getElementById("d,"+x_down+","+y_down);
+                    b.className = "white";
+                }
+            }
+        }else if(tname_up==tname_down&&tname_up=="d"){
+            if(e.className=="white"){
+                a=document.getElementById("d,"+x_up+","+y_up);
+                a.className = "yellow";
+                if(is_follow){
+                    b=document.getElementById("p,"+x_down+","+y_down);
+                    b.className = "yellow";
+                }
+            }else{
+                a=document.getElementById("d,"+x_up+","+y_up);
+                a.className = "white";
+                if(is_follow){
+                    b=document.getElementById("p,"+x_down+","+y_down);
+                    b.className = "white";
+                }
+            }
+        }
+    }else{
+        if(y_up>y_down){
+            if(x_up>=x_down){
+                for(i=x_down;i<=x_up;i++){
+                    for(j=y_down;j<=y_up;j++){
+                        //console.log("p,"+i+","+j);
+                        if(tname_up==tname_down&&tname_up=="p"){
+                            a=document.getElementById("p,"+i+","+j);
+                            a.className = "yellow";
+                            if(is_follow){
+                                b=document.getElementById("d,"+i+","+j);
+                                b.className = "yellow";
+                            }
+                        }else if(tname_up==tname_down&&tname_up=="d"){
+                            a=document.getElementById("d,"+i+","+j);
+                            a.className = "yellow";
+                            if(is_follow){
+                                b=document.getElementById("p,"+i+","+j);
+                                b.className = "yellow";
+                            }
+                        }
+                    }
+                }          
+            }else {
+                for(i=x_up;i<=x_down;i++){
+                    for(j=y_down;j<=y_up;j++){
+                        //console.log(i+","+j);
+                        if(tname_up==tname_down&&tname_up=="p"){
+                            a=document.getElementById("p,"+i+","+j);
+                            a.className = "white";
+                            if(is_follow){
+                                b=document.getElementById("d,"+i+","+j);
+                                b.className = "white";
+                            }
+                        }else if(tname_up==tname_down&&tname_up=="d"){
+                            a=document.getElementById("d,"+i+","+j);
+                            a.className = "white";
+                            if(is_follow){
+                                b=document.getElementById("p,"+i+","+j);
+                                b.className = "white";
+                            }
+                        }
+                    }   
+                }          
+            }
+        }else if(y_up==y_down){
+            if(x_up>x_down){
+                for(i=x_down;i<=x_up;i++){
+                    for(j=y_down;j<=y_up;j++){
+                        //console.log(i+","+j);
+                        if(tname_up==tname_down&&tname_up=="p"){
+                            a=document.getElementById("p,"+i+","+j);
+                            a.className = "yellow";
+                            if(is_follow){
+                                b=document.getElementById("d,"+i+","+j);
+                                b.className = "yellow";
+                            }
+                        }else if(tname_up==tname_down&&tname_up=="d"){
+                            a=document.getElementById("d,"+i+","+j);
+                            a.className = "yellow";
+                            if(is_follow){
+                                b=document.getElementById("p,"+i+","+j);
+                                b.className = "yellow";
+                            }
+                        }
+                    }
+                }          
+            }else {
+                for(i=x_up;i<=x_down;i++){
+                    for(j=y_down;j<=y_up;j++){
+                        //console.log(i+","+j);
+                        if(tname_up==tname_down&&tname_up=="p"){
+                            a=document.getElementById("p,"+i+","+j);
+                            a.className = "white";
+                            if(is_follow){
+                                b=document.getElementById("d,"+i+","+j);
+                                b.className = "white";
+                            }
+                        }else if(tname_up==tname_down&&tname_up=="d"){
+                            a=document.getElementById("d,"+i+","+j);
+                            a.className = "white";
+                            if(is_follow){
+                                b=document.getElementById("p,"+i+","+j);
+                                b.className = "white";
+                            }
+                        }
+                    }   
+                }          
+            }
+        }else{
+            if(x_up>=x_down){
+                for(i=x_down;i<=x_up;i++){
+                    for(j=y_up;j<=y_down;j++){
+                        //console.log(i+","+j);
+                        if(tname_up==tname_down&&tname_up=="p"){
+                            a=document.getElementById("p,"+i+","+j);
+                            a.className = "white";
+                            if(is_follow){
+                                b=document.getElementById("d,"+i+","+j);
+                                b.className = "white";
+                            }
+                        }else if(tname_up==tname_down&&tname_up=="d"){
+                            a=document.getElementById("d,"+i+","+j);
+                            a.className = "white";
+                            if(is_follow){
+                                b=document.getElementById("p,"+i+","+j);
+                                b.className = "white";
+                            }
+                        }
+                    }
+                }          
+            }else{
+                for(i=x_up;i<=x_down;i++){
+                    for(j=y_up;j<=y_down;j++){
+                        //console.log(i+","+j);
+                        if(tname_up==tname_down&&tname_up=="p"){
+                            a=document.getElementById("p,"+i+","+j);
+                            a.className = "white";
+                            if(is_follow){
+                                b=document.getElementById("d,"+i+","+j);
+                                b.className = "white";
+                            }
+                        }else if(tname_up==tname_down&&tname_up=="d"){
+                            a=document.getElementById("d,"+i+","+j);
+                            a.className = "white";
+                            if(is_follow){
+                                b=document.getElementById("p,"+i+","+j);
+                                b.className = "white";
+                            }
+                        }
+                    }
+                }          
+            }
+        }
+    }
+}
+function load(){
+    var follow_Obj = document.getElementById("follow");
+    follow_Obj.checked = true;
+    is_follow=1;
+    document.getElementById("EleIdr").style.display="none";
+}
+function change(obj){
+    if (obj.checked == true){
+        is_follow=1;
+        document.getElementById("EleIdr").style.display="none";
+    }
+    else{
+        is_follow=0;
+        document.getElementById("EleIdr").style.display="inline";
+    }
+}
+function emp(){
+    for(i=0;i<32;i++){
+        for(j=0;j<32;j++){
+            //console.log(i+","+j);
+            a=document.getElementById("p,"+i+","+j);
+            b=document.getElementById("d,"+i+","+j);
+            a.className = "white";
+            b.className = "white";
+        }   
+    }
+}
+function bin_to_hex(str) {
+    let hex_array = [{key:0,val:"0000"},{key:1,val:"0001"},{key:2,val:"0010"},{key:3,val:"0011"},{key:4,val:"0100"},{key:5,val:"0101"},{key:6,val:"0110"},{key:7,val:"0111"},
+        {key:8,val:"1000"},{key:9,val:"1001"},{key:'a',val:"1010"},{key:'b',val:"1011"},{key:'c',val:"1100"},{key:'d',val:"1101"},{key:'e',val:"1110"},{key:'f',val:"1111"}]
+    let value = ''
+    let list=[]
+    //console.log(str)
+    if(str.length%4!==0){
+        let a = "0000"
+        let b=a.substring(0,4-str.length%4)
+        str = b.concat(str)
+    }
+    //console.log(str)
+    while (str.length > 4) {
+        list.push(str.substring(0, 4))
+        str = str.substring(4);
+    }
+    list.push(str)
+    //console.log(list)
+    for(let i=0;i<list.length;i++){
+        for(let j=0;j<hex_array.length;j++){
+            if(list[i]==hex_array[j].val){
+                value = value.concat(hex_array[j].key)
+                break
+            }
+        }
+    }
+    //console.log(value)
+    return value
+}
+function output(e){
+    var isExist = document.getElementById('boxId');
+    var arrayObj = new Array();
+    var ll=0;
+    var pointcur=[24,24];
+    if(e.id=="EleIdr"){
+        for(i=0;i<4;i++){
+            if(ll==0){
+                for(j=0;j<4;j++){
+                      for(n=pointcur[1];n<pointcur[1]+8;n++){
+                          var arraytmp = new Array();
+                          for(m=pointcur[0];m<pointcur[0]+8;m++){
+                                //console.log(m,n);
+                                d=document.getElementById('d,'+m+","+n);
+                                if(d.className =="white"){
+                                    arraytmp.push(0);
+                                }else{
+                                    arraytmp.push(1);
+                                }
+                          }
+                          hex=bin_to_hex(arraytmp.join(""));
+                          //console.log(hex);
+                          arrayObj.push("0x"+hex);
+                      }
+                if(j!=3){
+                    pointcur[0]=pointcur[0]-8;
+                }
+                }
+            ll=1;
+            pointcur[1]=pointcur[1]-8;
+            }else{
+                for(j=0;j<4;j++){
+                      for(n=pointcur[1];n<pointcur[1]+8;n++){
+                          var arraytmp = new Array();
+                          for(m=pointcur[0];m<pointcur[0]+8;m++){
+                                //console.log(m,n);
+                                d=document.getElementById('d,'+m+","+n);
+                                if(d.className =="white"){
+                                    arraytmp.push(0);
+                                }else{
+                                    arraytmp.push(1);
+                                }
+                          }
+                          hex=bin_to_hex(arraytmp.join(""));
+                          arrayObj.push("0x"+hex);
+                      }
+                if(j!=3){
+                    pointcur[0]=pointcur[0]+8;
+                }
+                }
+            ll=0;
+            pointcur[1]=pointcur[1]-8;
+            }
+        }
+    }else{
+        for(i=0;i<4;i++){
+            if(ll==0){
+                for(j=0;j<4;j++){
+                      for(n=pointcur[1];n<pointcur[1]+8;n++){
+                          var arraytmp = new Array();
+                          for(m=pointcur[0];m<pointcur[0]+8;m++){
+                                //console.log(m,n);
+                                d=document.getElementById('p,'+m+","+n);
+                                if(d.className =="white"){
+                                    arraytmp.push(0);
+                                }else{
+                                    arraytmp.push(1);
+                                }
+                          }
+                          hex=bin_to_hex(arraytmp.join(""));
+                          arrayObj.push("0x"+hex);
+                      }
+                if(j!=3){
+                    pointcur[0]=pointcur[0]-8;
+                }
+                }
+            ll=1;
+            pointcur[1]=pointcur[1]-8;
+            }else{
+                for(j=0;j<4;j++){
+                      for(n=pointcur[1];n<pointcur[1]+8;n++){
+                          var arraytmp = new Array();
+                          for(m=pointcur[0];m<pointcur[0]+8;m++){
+                                //console.log(m,n);
+                                d=document.getElementById('p,'+m+","+n);
+                                if(d.className =="white"){
+                                    arraytmp.push(0);
+                                }else{
+                                    arraytmp.push(1);
+                                }
+                          }
+                          hex=bin_to_hex(arraytmp.join(""));
+                          arrayObj.push("0x"+hex);
+                      }
+                if(j!=3){
+                    pointcur[0]=pointcur[0]+8;
+                }
+                }
+            ll=0;
+            pointcur[1]=pointcur[1]-8;
+            }
+        }
+    }
+      //判断是否存在，防止重复添加
+      if( undefined == isExist || null == isExist ){
+        text="";
+        for (i = 0; i < arrayObj.length; i++) {
+             text += arrayObj[i] + ",";
+             if((i+1)%8==0){
+                text +="<br>";
+             }
+        }
+        //生成一个div
+        var boxDiv = document.createElement('div');
+        boxDiv.className = 'box1'; //添加我们自定义的样式
+        boxDiv.id = 'boxId'; //给这个DIV添加一个ID,便于删除
+        boxDiv.innerHTML = "<div class='title'><span class='closeBtn' onclick='removeDiv()'>关闭</span></div><p>"+text+"</p>";
+        document.body.appendChild(boxDiv);
+    }
+}
+    //移除DIV事件
+function removeDiv(){
+    var boxDiv =  document.getElementById('boxId');
+    document.body.removeChild(boxDiv);    
+}
+  </script>
+ </head>
+ <body ondragstart = "return false;" onload="load()">
+ <script>
+ var winHeight=0;
+ var winWidth=0;
+ if(window.innerHeight){
+    winHeight = window.innerHeight;
+    }
+else if((document.body) && (document.body.clientHeight)){
+winHeight = document.body.clientHeight;
+}
+ if(window.innerWidth){
+    winWidth = window.innerWidth;
+    }
+else if((document.body) && (document.body.clientWidth)){
+winWidth = document.body.clientWidth;
+}
+th_width=Math.ceil(0.45*(winHeight-14)/32);
+document.write("<div id='tablelist'"+">")
+document.write("<table id ='p'"+" onmousemove='mousemove(event)'"+">")
+  for (i = 0; i <32; i++){
+    document.write("<tr class='p,"+i+"'>")
+    for(j=0;j<32;j++){
+            document.write("<td id='p,"+i+","+j+"' "+"width="+th_width+" "+"height="+th_width+" class='white'"+" onmousedown='mouseDown(this,event)'"+" onmouseup='mouseUp(this,event)'"+"></td>")
+    }
+    document.write("</tr>")
+    }
+    for (i = 0; i <32; i++){
+        for (j = 0; j <32; j++){
+            if(i==7){
+                document.getElementById('p,'+i+","+j).style.borderBottom="1.2px solid #FF00FF";
+            }else if(j==7){
+                document.getElementById('p,'+i+","+j).style.borderRight="1.2px solid #FF00FF";
+            }else if(i==15){
+                document.getElementById('p,'+i+","+j).style.borderBottom="1.51px solid #FF00FF";
+            }else if(j==15){
+                document.getElementById('p,'+i+","+j).style.borderRight="1.51px solid #FF00FF";
+            }else if(j==23){
+                document.getElementById('p,'+i+","+j).style.borderRight="1.2px solid #FF00FF";
+            }else if(i==23){
+                document.getElementById('p,'+i+","+j).style.borderBottom="1.2px solid #FF00FF";
+            }
+        }
+    }
+    x=document.getElementById('p,'+7+","+7);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('p,'+7+","+15);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('p,'+7+","+23);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('p,'+15+","+7);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('p,'+15+","+15);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('p,'+15+","+23);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('p,'+23+","+7);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('p,'+23+","+15);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('p,'+23+","+23);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    document.write("</table>")
+    document.write("<table id ='d'"+" onmousemove='mousemove(event)'"+">")
+  for (i = 0; i <32; i++){
+    document.write("<tr class='d,"+i+"'>")
+    for(j=0;j<32;j++){
+            document.write("<td id='d,"+i+","+j+"' "+"width="+th_width+" "+"height="+th_width+" class='white'"+" onmousedown='mouseDown(this,event)'"+" onmouseup='mouseUp(this,event)'"+"></td>")
+    }
+    document.write("</tr>")
+    }
+    for (i = 0; i <32; i++){
+        for (j = 0; j <32; j++){
+            if(i==7){
+                document.getElementById('d,'+i+","+j).style.borderBottom="1.2px solid #FF00FF";
+            }else if(j==7){
+                document.getElementById('d,'+i+","+j).style.borderRight="1.2px solid #FF00FF";
+            }else if(i==15){
+                document.getElementById('d,'+i+","+j).style.borderBottom="1.51px solid #FF00FF";
+            }else if(j==15){
+                document.getElementById('d,'+i+","+j).style.borderRight="1.51px solid #FF00FF";
+            }else if(j==23){
+                document.getElementById('d,'+i+","+j).style.borderRight="1.2px solid #FF00FF";
+            }else if(i==23){
+                document.getElementById('d,'+i+","+j).style.borderBottom="1.2px solid #FF00FF";
+            }
+        }
+    }
+    x=document.getElementById('d,'+7+","+7);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('d,'+7+","+15);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('d,'+7+","+23);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('d,'+15+","+7);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('d,'+15+","+15);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('d,'+15+","+23);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('d,'+23+","+7);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('d,'+23+","+15);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    x=document.getElementById('d,'+23+","+23);
+    x.style.cssText="border-right:1.2px solid #FF00FF;border-bottom:1.2px solid #FF00FF;";
+    document.write("</table>")
+    document.write("<input type='checkbox' id='follow' onclick='change(this)'/>follow")
+    document.write("<button class='control' id='EleIdl' onclick='output(this)'>o_left</button>")
+    document.write("<button class='control' id='EleIdr' onclick='output(this)'>o_right</button>")
+    document.write("<button class='control' onclick='emp()'>clear</button>")
+document.write("</div>")
+</script>
+</body>
+</html>
